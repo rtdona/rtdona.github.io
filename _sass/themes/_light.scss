@@ -1,8 +1,10 @@
 @mixin styles {
   /* Framework color */
-  --main-bg: white;
+  //--main-bg: rgba(237, 237, 237, 0.9);
+  --main-bg: rgba(237, 237, 237, 0.9);
   --mask-bg: #c1c3c5;
-  --main-border-color: #f3f3f3;
+  //--main-border-color: #f3f3f3;
+  --main-border-color: rgba(237, 237, 237, 1);
 
   /* Common color */
   --text-color: #34343c;
@@ -40,9 +42,9 @@
   --sidebar-muted-color: #545454;
   --sidebar-active-color: #1d1d1d;
   --sidebar-hover-bg: rgb(223, 233, 241, 0.64);
-  --sidebar-btn-bg: white;
+  --sidebar-btn-bg: rgba(237, 237, 237, 0.9);
   --sidebar-btn-color: #8e8e8e;
-  --avatar-border-color: white;
+  --avatar-border-color: rgba(237, 237, 237, 0.9);
 
   /* Topbar */
   --topbar-bg: rgb(255, 255, 255, 0.7);
@@ -61,7 +63,7 @@
   --toc-popup-border-color: lightgray;
   --btn-share-color: gray;
   --btn-share-hover-color: #0d6efd;
-  --card-bg: white;
+  --card-bg: rgba(237, 237, 237, 0.9);
   --card-hovor-bg: #e2e2e2;
   --card-shadow: rgb(104, 104, 104, 0.05) 0 2px 6px 0,
     rgba(211, 209, 209, 0.15) 0 0 0 1px;
@@ -71,7 +73,7 @@
   --dash-color: silver;
   --kbd-wrap-color: #bdbdbd;
   --kbd-text-color: var(--text-color);
-  --kbd-bg-color: white;
+  --kbd-bg-color: rgba(237, 237, 237, 0.9);
   --prompt-text-color: rgb(46, 46, 46, 0.77);
   --prompt-tip-bg: rgb(123, 247, 144, 0.2);
   --prompt-tip-icon-color: #03b303;

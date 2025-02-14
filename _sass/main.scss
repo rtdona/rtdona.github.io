@@ -2,3 +2,5 @@
 @forward 'components';
 @forward 'layout';
 @forward 'pages';
+
+@import "custom"; /* _sass/custom.scss 파일을 포함 */
