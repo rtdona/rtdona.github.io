@@ -6,6 +6,8 @@
   //--main-border-color: #f3f3f3;
   --main-border-color: rgba(237, 237, 237, 1);
 
+  --point-color: #ea4624;
+
   /* Common color */
   --text-color: #34343c;
   --text-muted-color: #757575;
@@ -14,14 +16,15 @@
   --label-color: #585858;
   --blockquote-border-color: #eeeeee;
   --blockquote-text-color: #757575;
-  --link-color: #0056b2;
+  // --link-color: #0056b2;
+  --link-color: var(--point-color);
   --link-underline-color: #dee2e6;
   --button-bg: #ffffff;
   --btn-border-color: #e9ecef;
   --btn-backtotop-color: #686868;
   --btn-backtotop-border-color: #f1f1f1;
   --checkbox-color: #c5c5c5;
-  --checkbox-checked-color: #07a8f7;
+  --checkbox-checked-color: var(--point-color); //#07a8f7;
   --img-bg: radial-gradient(
     circle,
     rgb(255, 255, 255) 0%,
@@ -59,10 +62,10 @@
   --btn-paginator-hover-color: var(--sidebar-bg);
 
   /* Posts */
-  --toc-highlight: #0550ae;
+  --toc-highlight: var(--point-color); //#0550ae;
   --toc-popup-border-color: lightgray;
   --btn-share-color: gray;
-  --btn-share-hover-color: #0d6efd;
+  --btn-share-hover-color: var(--point-color);// #0d6efd;
   --card-bg: rgba(237, 237, 237, 0.9);
   --card-hovor-bg: #e2e2e2;
   --card-shadow: rgb(104, 104, 104, 0.05) 0 2px 6px 0,
