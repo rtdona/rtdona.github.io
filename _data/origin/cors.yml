@@ -16,7 +16,7 @@ resource_hints:
 
 # Web Fonts
 #webfonts: https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Source+Sans+Pro:wght@400;600;700;900&display=swap
-webfonts: https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR&family=Lato:wght@300;400&family=Source+Sans+Pro:wght@400;600;700;900&family=Noto+Sans+KR:wght@400,600,700,900&family=Noto+Serif+KR:wght@400,600,700,900&JetBrains+Mono:ital,wght@500,800&display=swap
+webfonts: https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR&&family=Noto+Sans+KR:wght@100..90&family=Lato:wght@300;400&family=Source+Sans+Pro:wght@400;600;700;900&family=Noto+Sans+KR:wght@400,600,700,900&family=Noto+Serif+KR:wght@400,600,700,900&JetBrains+Mono:ital,wght@500,800&display=swap
 
 # Libraries
 
