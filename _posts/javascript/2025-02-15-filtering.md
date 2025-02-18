@@ -26,7 +26,9 @@ tags: [javascript, jquery, filtering, masking, 필터링, 마스킹]
   <script src="app.js"></script>
 ```
 
-그리고 javascript에서 필터링을 처리해봅니다
+## javascript (app.ks)
+
+그리고 javascript에서 필터링을 처리해봅니다.
 
 ```javascript
 // app.js
