@@ -2,10 +2,3 @@ pre,
 code {
   font-family: 'JetBrains Mono', monospace;
 }
-
-/* Overwrite bootstrap outline button */
-.btn.btn-outline-primary {
-  &:not(.disabled):hover {
-    border-color: var(--point-color) !important;
-  }
-}
