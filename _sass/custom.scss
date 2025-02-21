@@ -2,3 +2,6 @@ pre,
 code {
   font-family: 'JetBrains Mono', monospace;
 }
+.btn.btn-outline-primary:not(.disabled):hover {
+  background: var(--point-color);
+}
