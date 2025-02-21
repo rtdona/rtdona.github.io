@@ -16,7 +16,7 @@ tags: [javascript, jquery, filtering, masking, 필터링, 마스킹]
 - [소개](#javascript로-dom-텍스트-검증-및-변환)
 - [HTML 구조](#html-구조)
 - [JavaScript (app.js)](#javascript-appjs)
-- [필터링 결과](#필터링을-적용하면)
+- [필터링 결과](#필터링-결과)
 - [결론](#결론)
 - [참고](#참고)
 
@@ -86,6 +86,8 @@ document.querySelectorAll('p').forEach((element) => {
 
 
 ```
+
+## 필터링 결과
 필터링을 적용하면...  
 페이지에 표시되는 내용은 변환된 텍스트로 바뀌게 됩니다. 키워드가 포함된 부분만 *로 변환되며, 다른 텍스트는 그대로 유지됩니다.
 
