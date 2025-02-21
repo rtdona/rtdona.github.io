@@ -28,7 +28,7 @@ tags: [javascript, jquery, filtering, masking, 필터링, 마스킹]
   <script src="app.js"></script>
 ```
 
-## javascript (app.ks)
+## javascript (app.js)
 
 그리고 javascript에서 필터링을 처리해봅니다.
 
@@ -95,9 +95,12 @@ document.querySelectorAll('p').forEach((element) => {
 
 ### 참고
 arr.some(subStr => str.includes(subStr));
-: Array.prototype.some()은 배열의 요소 중에서 하나라도 주어진 조건을 만족하는지 검사하는 메서드입니다. 이 메서드는 조건을 만족하는 요소가 하나라도 있으면 true를 반환하고, 그렇지 않으면 false를 반환합니다.
+: Array.prototype.some()은 배열의 요소 중에서 하나라도 주어진 조건을 만족하는지 검사하는 메서드입니다.  
+이 메서드는 조건을 만족하는 요소가 하나라도 있으면 true를 반환하고, 그렇지 않으면 false를 반환합니다.
 
-const regex = new RegExp(keyword, 'g'); // 키워드의 정규식
-: RegExp는 JavaScript에서 정규식을 처리하기 위한 객체입니다. 정규식(Regular Expressions)은 문자열 내에서 특정 패턴을 찾고, 대체하거나 검증하는 데 사용됩니다. new RegExp(pattern, flags) 형태로 사용되며, pattern은 정규식 패턴을, flags는 정규식에 대한 설정 옵션을 지정합니다.
+const regex = new RegExp(keyword, 'g');
+: RegExp는 JavaScript에서 정규식을 처리하기 위한 객체입니다.  
+정규식(Regular Expressions)은 문자열 내에서 특정 패턴을 찾고, 대체하거나 검증하는 데 사용됩니다.  
+new RegExp(pattern, flags) 형태로 사용되며, pattern은 정규식 패턴을, flags는 정규식에 대한 설정 옵션을 지정합니다.
 
 
