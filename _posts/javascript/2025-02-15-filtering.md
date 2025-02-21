@@ -11,6 +11,15 @@ tags: [javascript, jquery, filtering, masking, 필터링, 마스킹]
 개발하다보면 이름이나 연락처 같은 개인정보 데이터를 웹, 앱에 보여줘야할 때가 생기는데,
 개인정보는 노출되면 안되는 민감한 정보들이기 때문에, 이 데이터들은 그대로 보여주기보다는 필터링, 마스킹하여 보여줘야합니다.
 
+
+## 목차
+- [소개](#javascript로-dom-텍스트-검증-및-변환)
+- [HTML 구조](#html-구조)
+- [JavaScript (app.js)](#javascript-appjs)
+- [필터링 결과](#필터링을-적용하면)
+- [결론](#결론)
+- [참고](#참고)
+
 # JavaScript로 DOM 텍스트 검증 및 변환
 
 이 포스트에서는 **JavaScript**를 사용하여 DOM에 있는 텍스트를 검증하고,  
