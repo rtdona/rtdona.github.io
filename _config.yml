@@ -17,7 +17,8 @@ timezone: Asia/Seoul
 title: Holymason # the main title
 
 tagline: >-  # it will display as the subtitle
-  300% : Specialization & Field & System
+  300%
+  Specialization & Field & System
 
 description: >- # used by seo meta and the atom feed
   300% : Specialization & Field & System
