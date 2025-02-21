@@ -4,5 +4,5 @@ code {
 }
 .btn.btn-outline-primary:not(.disabled):hover {
   background: var(--point-color);
-  border-color : var(--point-color);
+  border-color : var(--point-color) !important;
 }
