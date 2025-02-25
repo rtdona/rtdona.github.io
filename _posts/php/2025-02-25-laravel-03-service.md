@@ -1,12 +1,13 @@
 ---
-title: Laravel 02 - Service Container, Service Provider
+title: Laravel 03 - Service Container, Service Provider
 description: Service Container, Service Provider
 author: holymason
+published: false
 categories: [php]
 tags: [php, laravel, 라라벨, mvc]
 ---
 
-이 포스트에서는 Laravel의 기능 중 에 대해 간단하게 소개합니다.
+이 포스트에서는 Laravel의 기능에 대해 간단하게 소개합니다.
 
 # Laravel 서비스 컨테이너와 서비스 프로바이더 활용법
 
