@@ -3,7 +3,7 @@ title: Laravel 03 - Service Container, Service Provider
 description: Service Container, Service Provider
 author: holymason
 published: false
-categories: [php]
+categories: [php, laravel]
 tags: [php, laravel, 라라벨, mvc]
 ---
 
