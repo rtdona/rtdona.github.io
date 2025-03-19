@@ -1,19 +1,24 @@
 ---
 title: Laravel 03 - Service Container, Service Provider
-description: Service Container, Service Provider
+description: 서비스컨테이너, 서비스프로바이더 알아보기
 author: holymason
-published: false
 categories: [php, laravel]
-tags: [php, laravel, 라라벨, mvc]
+tags: [php, laravel, 라라벨, mvc, di, service]
 ---
 
 이 포스트에서는 Laravel의 서비스 컨테이너와 서비스 프로바이더 대해 간단하게 소개합니다.
 
-# Laravel 서비스 컨테이너와 서비스 프로바이더 활용법
+# Laravel 서비스 컨테이너와 서비스 프로바이더
 
 Laravel은 강력한 의존성 관리 시스템인 **서비스 컨테이너**와 **서비스 프로바이더**를 제공합니다. 이 두 기능은 효율적인 의존성 주입(Dependency Injection) 패턴을 구현하는 데 핵심적인 역할을 합니다.
 > **의존성 주입(Dependency Injection)**  
 의존성 주입이란 객체 A가 객체 B에 의존해야 할 때, A 내부에서 B를 직접 생성하는 것이 아니라, 외부(IoC 컨테이너 등)에서 B의 인스턴스를 생성하고 이를 A에 주입하는 설계 패턴입니다. 이 방식은 객체 간 결합도를 낮춰 **코드의 유연성과 유지보수성**을 높이며, 코드의 변경이 발생할 경우 최소한의 코드 수정만으로 대응할 수 있습니다.
+
+## 목차
+1. [서비스 컨테이너(Service Container)](#1-서비스-컨테이너service-container)
+2. [서비스 프로바이더(Service Provider)](#2-서비스-프로바이더service-provider)
+3. [예제](#3-예제)
+4. [결론](#결론)
 
 ## 1. 서비스 컨테이너(Service Container)
 
@@ -60,7 +65,7 @@ return $app;
 
 ### 
 
-## 3. 서비스 컨테이너 예제
+## 3. 예제
 ### 3.1. 기본 바인딩
 
 ```php
