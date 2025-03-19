@@ -43,6 +43,7 @@ Laravel은 강력한 의존성 관리 시스템인 **서비스 컨테이너**와
 3. **패키지 통합**: 외부 패키지들을 Laravel 애플리케이션에 통합합니다.
 
 ### 예시) Laravel 부트스트랩에서의 서비스 컨테이너 
+
 ```php
 // /bootstrap/app.php (Laravel 10)
 $app = new Illuminate\Foundation\Application(
@@ -63,7 +64,6 @@ $app->singleton(
 return $app;
 ```
 
-### 
 
 ## 3. 예제
 ### 3.1. 기본 바인딩
@@ -93,8 +93,8 @@ class PostController extends Controller
 
 ### 3.2. 인터페이스와 클래스 바인딩
 * 인터페이스와 클래스 바인딩을 사용하면 구체적인 클래스에 직접 의존하지 않고, 인터페이스를 통해 의존성을 주입받을 수 있습니다.
+
 ```php
-// 인터페이스 생성
 namespace App\Contracts;
 use App\Models\Post;
 
@@ -136,6 +136,7 @@ class PostController extends Controller
     }
 }
 ```
+
 * `bind(인터페이스::class, 구현 클래스::class)`를 사용하여 인터페이스와 클래스를 연결합니다.
 * `PostController`에서는 구체적인 클래스가 아닌 `PostServiceInterface`를 의존성으로 받습니다.
 * 따라서 나중에 `PostService`를 다른 클래스로 대체해도 컨트롤러 코드를 수정할 필요가 없습니다.
@@ -161,6 +162,7 @@ public function register()
 ### 3.4. 컨텍스트 바인딩
 * 특정 클래스에서만 특정 구현을 사용하도록 컨텍스트 바인딩을 설정할 수 있습니다.
 * 예를 들어, `PostController`에서는 `PostService`를 사용하고, `AdminPostController`에서는 `AdminPostService`를 사용하도록 설정할 수 있습니다.
+
 ```php
 namespace App\Services;
 use App\Contracts\PostServiceInterface;
@@ -189,7 +191,7 @@ public function register()
 // 컨트롤러에서 사용
 // PostController, AdminPostController에서 같은 인터페이스를 사용하지만,
 // 서비스 컨테이너에서 컨트롤러에 맞는 서비스로 바인딩 해줍니다.
-class PostController extends Controller
+class PostController extends Co너troller
 {
     protected $postService;
 
