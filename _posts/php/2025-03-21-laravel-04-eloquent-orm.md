@@ -10,6 +10,10 @@ tags: [php, laravel, 라라벨, eloquent-orm, mvc]
 이번 포스트는 Laravel 프레임워크의 강력한 기능 중 하나인 Eloquent ORM에 대한 포스트입니다.
 Post 모델과 PostService를 활용한 실제 예제를 통해 Eloquent ORM의 기본 개념과 활용법을 알아보겠습니다.
 
+## 목차
+
+
+
 ## Eloquent ORM이란?
 
 Eloquent는 Laravel에서 제공하는 ORM(Object-Relational Mapping) 시스템입니다.  
@@ -107,6 +111,7 @@ $posts = Post::whereHas('comments', function($query) {
 * 옵저버 패턴: 별도의 클래스로 이벤트 리스너를 분리해 코드를 더 깔끔하게 관리할 수 있습니다.
 * 생명주기 이벤트: 모델이 생성, 업데이트, 삭제 등의 작업 전후에 특정 코드를 실행할 수 있습니다.
   * `creating`, `created`, `updating`, `updated`, `saving`, `saved`, `deleting`, `deleted`, `restoring`, `restored` 등
+* 옵저버 생성 명령어 예제 : `php artisan make:observer PostObserver --model=Post`
 
 ```php
 // 모델 이벤트 예시
@@ -371,19 +376,17 @@ class Post extends Model
 $publishedPosts = Post::published()->get();
 
 // 여러 스코프 체이닝
-$popularPublishedPosts = Post::published()->hot()->new()->get();
+$hotNewPublishedPosts = Post::published()->hot()->new()->get();
 
-// 매개변수가 있는 스코프 사용
-$userPosts = Post::fromUser(1)->get();
+// 파라미터가 있는 스코프 사용
+$userPosts = Post::fromUser($userId)->get();
 
 // 서비스에서 스코프 활용
 class PostService
 {
-    // ...
-    
-    public function getPopularPublishedPosts(): Collection
+    public function getHotPublishedPosts(): Collection
     {
-        return Post::published()->popular()->get();
+        return Post::published()->hot()->get();
     }
     
     public function getUserPublishedPosts(int $userId): Collection
@@ -393,12 +396,12 @@ class PostService
 }
 ```
 
-## 8. 고급 쿼리 빌더 사용법
-
-Eloquent는 강력한 쿼리 빌더를 기반으로 합니다:
+## 8. 쿼리 빌더 
+* **쿼리 빌더 Query Builder**는 SQL을 객체지향적으로 작성할 수 있도록 도와주는 강력한 도구입니다.
+* 기본적인 `where`, `orderBy`, `groupBy`, `get` 등의 메소드 외에도, 더 복잡한 쿼리를 효율적으로 작성할 수도 있습니다.
 
 ```php
-// 여러 조건을 사용한 복잡한 쿼리
+// 여러 조건을 사용한 쿼리
 $posts = Post::where('is_published', true)
     ->where(function ($query) {
         $query->where('view_count', '>', 100)
@@ -411,7 +414,7 @@ $posts = Post::where('is_published', true)
     ->take(5)
     ->get();
 
-// 서브 쿼리 사용
+// Sub Query
 $posts = Post::whereIn('id', function ($query) {
     $query->select('post_id')
           ->from('post_views')
@@ -419,7 +422,7 @@ $posts = Post::whereIn('id', function ($query) {
 })
 ->get();
 
-// 원시 표현식 사용
+// Raw Query
 $posts = Post::select(DB::raw('COUNT(*) as post_count, user_id'))
     ->where('is_published', true)
     ->groupBy('user_id')
@@ -427,120 +430,37 @@ $posts = Post::select(DB::raw('COUNT(*) as post_count, user_id'))
     ->get();
 ```
 
-## 9. 모델 이벤트 및 옵저버
-
-Eloquent 모델은 다양한 이벤트를 트리거합니다:
-
-```php
-class Post extends Model
-{
-    // ...
-    
-    // 모델 이벤트 리스너 등록
-    protected static function booted()
-    {
-        // 생성 전 이벤트
-        static::creating(function ($post) {
-            // 슬러그 자동 생성
-            $post->slug = Str::slug($post->title);
-        });
-        
-        // 업데이트 후 이벤트
-        static::updated(function ($post) {
-            Cache::forget('post_' . $post->id);
-        });
-        
-        // 저장 후 이벤트 (생성 또는 업데이트)
-        static::saved(function ($post) {
-            // 관련된 캐시 갱신
-        });
-        
-        // 삭제 후 이벤트
-        static::deleted(function ($post) {
-            // 관련 리소스 정리
-        });
-    }
-}
-```
-
-또는 별도의 옵저버 클래스를 생성할 수 있습니다:
-
-```bash
-php artisan make:observer PostObserver --model=Post
-```
+## 9. Eloquent Collection 활용
+* Eloquent에서 반환되는 결과는 Collection 객체입니다. 이를 활용하여 필요에 따라 데이터를 처리할 수 있습니다.
 
 ```php
-<?php
-
-namespace App\Observers;
-
-use App\Models\Post;
-
-class PostObserver
-{
-    public function creating(Post $post)
-    {
-        $post->slug = Str::slug($post->title);
-    }
-    
-    public function updated(Post $post)
-    {
-        Cache::forget('post_' . $post->id);
-    }
-    
-    public function deleted(Post $post)
-    {
-        // 연관된 리소스 정리
-    }
-}
-```
-
-옵저버 등록:
-
-```php
-// AppServiceProvider.php
-public function boot()
-{
-    Post::observe(PostObserver::class);
-}
-```
-
-## 10. Eloquent Collection 활용
-
-Eloquent에서 반환되는 결과는 Collection 객체입니다. 이를 활용하면 데이터를 쉽게 조작할 수 있습니다:
-
-```php
-// 컬렉션 필터링
+// Collection 필터링
 $publishedPosts = $posts->filter(function ($post) {
     return $post->is_published;
 });
 
-// 컬렉션 매핑
+// Collection 매핑
 $titles = $posts->map(function ($post) {
     return $post->title;
 });
 
-// 컬렉션 정렬
-$sortedPosts = $posts->sortByDesc('created_at');
-
-// 특정 컬럼 추출
-$ids = $posts->pluck('id');
+// 특정 컬럼만 추출
+$writer_ids = $posts->pluck('writer_user_id');
 
 // 그룹화
 $postsByUser = $posts->groupBy('user_id');
 
 // 조건 검사
-$hasPopular = $posts->contains(function ($post) {
+$isHot = $posts->contains(function ($post) {
     return $post->view_count > 1000;
 });
 ```
 
 ## 결론
 
-지금까지 Eloquent ORM의 기본 개념과 활용법에 대해 알아보았습니다. Post 모델과 PostService를 중심으로 다양한 예제를 살펴보았는데요, 이것은 Eloquent가 제공하는 기능의 일부일 뿐입니다. Eloquent는 더 많은 고급 기능을 제공하므로, 공식 문서를 참조하시면 더 깊이 있는 내용을 확인하실 수 있습니다.
+이번 포스트에서는 Post 모델과 PostService 서비스 클래스 예제를 통해서 Eloquent ORM의 기본 개념과 활용법에 대해 알아보았습니다.
 
-Eloquent를 활용하면 복잡한 데이터베이스 작업을 직관적이고 효율적으로 수행할 수 있습니다. 특히 서비스 레이어와 함께 사용하면 코드의 가독성과 유지보수성을 크게 향상시킬 수 있습니다.
+Eloquent ORM을 활용하면 복잡한 데이터베이스 작업을 직관적이고 효율적으로 처리할 수 있고, 특히 서비스 레이어와 함께 사용하면 코드의 가독성과 유지보수성을 크게 향상시킬 수 있습니다.  
 
-실제 프로젝트에서는 이 글에서 다룬 내용을 기반으로 본인의 요구사항에 맞게 응용하시면 됩니다. 또한, 성능 최적화나 대규모 데이터 처리 등의 고급 주제는 프로젝트의 필요에 따라 추가적인 학습이 필요할 수 있습니다.
-
-이 글이 여러분의 Laravel 개발에 도움이 되셨기를 바랍니다. 즐거운 코딩 되세요!
+Eloquent ORM에 대해서 포스트에서도 다루지 못한 더 많은 기능과 활용방법이 있으니  
+Eloquent ORM이 제공하는 더 많은 고급 기능은 공식 문서를 참조하시면 더 깊이 있는 내용을 확인하실 수 있습니다. 
