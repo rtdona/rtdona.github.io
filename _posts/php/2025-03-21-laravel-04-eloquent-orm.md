@@ -1,0 +1,725 @@
+---
+title: Laravel 04 - Eloquent ORM
+description: Eloquent ORM 알아보기
+author: holymason
+published: false
+categories: [php, laravel]
+tags: [php, laravel, 라라벨, eloquent-orm, mvc]
+---
+
+이번 포스트는 Laravel 프레임워크의 강력한 기능 중 하나인 Eloquent ORM에 대한 포스트입니다.
+Post 모델과 PostService를 활용한 실제 예제를 통해 Eloquent ORM의 기본 개념과 활용법을 알아보겠습니다.
+
+## 1. Eloquent ORM이란?
+
+Eloquent는 Laravel에서 제공하는 ORM(Object-Relational Mapping) 시스템입니다.  
+데이터베이스 테이블을 PHP 객체로 매핑하여 **SQL 쿼리를 직접 작성하지 않고도** 데이터베이스 작업을 수행할 수 있게 해줍니다.   
+ORM을 통해서 더 **직관적이고 단순한 코드**로 데이터베이스 작업을 수행할 수 있습니다.
+
+> _The Eloquent ORM included with Laravel provides a beautiful, simple ActiveRecord implementation for working with your database. Each database table has a corresponding "Model" which is used to interact with that table. Models allow you to query for data in your tables, as well as insert new records into the table._  
+> Laravel에 포함된 Eloquent ORM은 데이터베이스 작업을 위한 아름답고 간단한 ActiveRecord 구현을 제공합니다. 각 데이터베이스 테이블에는 해당 테이블과 상호 작용하는 데 사용되는 해당 "모델"이 있습니다. 모델을 사용하면 테이블의 데이터를 쿼리하고 테이블에 새 레코드를 삽입할 수 있습니다.  
+> 출처 : https://laravel.com/docs/11.x/structure#the-models-directory
+
+### Eloquent ORM의 주요 특징:
+1. Active Record 패턴을 구현
+   * 객체와 테이블의 일대일 매핑: 각 Eloquent 모델 클래스는 DB의 한 테이블에 대응됩니다
+   * 객체에 내장된 CRUD 기능: 모델 인스턴스가 직접 자신의 데이터를 DB에 저장, 수정, 삭제할 수 있습니다.
+   * 캡슐화된 데이터베이스 액세스: SQL 쿼리를 직접 작성하지 않고 객체지향적 방식으로 DB에 접근합니다.
+   
+```php
+// CRUD, 데이터베이스 액세스
+$post = new Post();
+$post->title = '제목';
+$post->content = '내용';
+$post->save(); // CREATE : DB에 저장
+
+$post->title = '수정된 제목';
+$post->save(); // UPDATE : DB에 업데이트
+
+$post->delete(); // DELETE : DB에서 삭제
+```
+
+2. 직관적인 데이터베이스 상호작용
+
+```php
+// 직관적인 쿼리
+$recentPosts = Post::where('is_published', true)
+    ->orderBy('created_at', 'desc')
+    ->take(5)
+    ->get();
+
+// 직관적인 메소드
+$userPostCount = Post::where('user_id', $userId)->count();
+$averageViewCount = Post::where('is_published', true)->avg('view_count');
+```
+
+3. 관계(Relationships) 관리 용이
+   * 명시적 관계 정의: 모델 클래스 내에 메서드로 관계를 정의해 코드의 가독성과 유지보수성을 높입니다.
+   * 다양한 관계 유형 지원
+     * 1:1 - hasOne / belongsTo 
+     * 1:N / N:1 - hasMany / belongsToMany
+     * 다형성 - morphTo / morphMany / morphToMany 
+   * 관계 지연 로딩과 즉시 로딩: 필요에 따라 관련 데이터를 함께 또는 나중에 로드할 수 있어 성능 최적화가 가능합니다.
+
+```php
+// 관계 정의 
+class Post extends Model {
+    // hasOne() 또는 hasMany() 관계를 정의하면, 현재 모델의 단수형 이름 + _id 를 외래 키로 찾습니다.
+    public function comments() {
+        return $this->hasMany(Comment::class);
+    }
+    
+    public function tags() {
+        return $this->belongsToMany(Tag::class);
+    }
+    
+    // 외래키를 따로 지정해줄 수도 있습니다.
+    public function user() {
+        return $this->belongsTo(User::class, 'writer_user_id');
+    }
+}
+
+// 관계 사용 예시
+// 지연 로딩
+$post = Post::find(1); // SELECT * FROM posts WHERE id = 1 LIMIT 1;
+$comments = $post->comments; // 이 시점에 쿼리 실행 : SELECT * FROM comments WHERE post_id = 1;
+
+// 즉시 로딩
+$posts = Post::with(['comments', 'user'])->get(); // 한 번에 모든 데이터 로드
+// 총 3번의 쿼리가 실행되어 결과가 $posts 에 반환됩니다
+// SELECT * FROM posts;
+// SELECT * FROM comments WHERE post_id IN (1, 2, 3, ...);
+// SELECT * FROM users WHERE id IN (10, 20, 30, ...);
+
+// 관계를 통한 쿼리
+$posts = Post::whereHas('comments', function($query) {
+    $query->where('is_approved', true);
+})->get();
+
+```
+
+4. 모델 이벤트 및 옵저버 지원
+   * Eloquent는 모델의 생명주기 동안 다양한 이벤트를 발생시켜 비즈니스 로직을 확장할 수 있게 합니다
+   * 옵저버 패턴: 별도의 클래스로 이벤트 리스너를 분리해 코드를 더 깔끔하게 관리할 수 있습니다.
+   * 생명주기 이벤트: 모델이 생성, 업데이트, 삭제 등의 작업 전후에 특정 코드를 실행할 수 있습니다.
+     * `creating`, `created`, `updating`, `updated`, `saving`, `saved`, `deleting`, `deleted`, `restoring`, `restored` 등
+
+```php
+// 모델 이벤트 예시
+class Post extends Model {
+    // 각각 이벤트가 발생할 때 자동으로 처리되는 로직을 추가할 수 있습니다.
+    protected static function booted() {
+        // 생성 시 어드민에게 푸시 발송
+        static::creating(function ($post) {
+            // App Push | Web Push
+        });
+        
+        // 캐시 관리
+        static::updated(function ($post) {
+            Cache::forget('post_' . $post->id);
+        });
+        
+        // 연관 데이터 처리
+        static::deleting(function ($post) {
+            $post->comments()->delete();
+        });
+    }
+}
+
+// 옵저버 클래스 예시
+class PostObserver {
+    public function creating(Post $post) {
+       // App Push | Web Push
+    }
+    
+    public function updating(Post $post) {
+        // 게시물이 수정될 때마다 last_modified_at 필드 업데이트
+        $post->last_modified_at = now();
+    }
+}
+
+// AppServiceProvider에서 옵저버 등록
+public function boot() {
+    Post::observe(PostObserver::class);
+}
+```
+
+
+
+5. 데이터베이스 마이그레이션과의 원활한 통합
+
+## 2. 모델 생성 및 기본 설정
+
+### 모델 생성하기
+
+Laravel에서 모델을 생성하는 방법은 아주 간단합니다. 아래 명령어를 사용하여 Post 모델을 생성해 보겠습니다:
+
+```bash
+php artisan make:model Post -m
+```
+
+`-m` 옵션을 사용하면 마이그레이션 파일도 함께 생성됩니다.
+
+### 기본적인 모델 구조
+
+생성된 Post 모델은 다음과 같은 구조를 가집니다:
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Post extends Model
+{
+    use HasFactory;
+    
+    // 필요한 설정 추가
+}
+```
+
+### 테이블 이름 및 기본 키 설정
+
+기본적으로 Eloquent는 모델 이름의 복수형을 테이블 이름으로 사용합니다(Post -> posts). 다른 테이블을 사용하려면 다음과 같이 지정할 수 있습니다:
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Post extends Model
+{
+    use HasFactory;
+    
+    // 사용할 테이블 이름 지정
+    protected $table = 'my_posts';
+    
+    // 기본 키 설정 (기본값은 'id')
+    protected $primaryKey = 'post_id';
+    
+    // 타임스탬프 사용 여부 (기본값은 true)
+    public $timestamps = true;
+}
+```
+
+### Mass Assignment 설정
+
+대량 할당(Mass Assignment)을 위한 설정도 중요합니다:
+
+```php
+class Post extends Model
+{
+    // 대량 할당 허용 필드
+    protected $fillable = [
+        'title', 'content', 'user_id', 'is_published'
+    ];
+    
+    // 또는 보호할 필드 지정
+    protected $guarded = ['id'];
+}
+```
+
+## 3. 마이그레이션 설정
+
+모델과 함께 생성된 마이그레이션 파일을 설정해 봅시다:
+
+```php
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::create('posts', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->text('content');
+            $table->foreignId('user_id')->constrained();
+            $table->boolean('is_published')->default(false);
+            $table->timestamps();
+            $table->softDeletes(); // 소프트 삭제 지원
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('posts');
+    }
+};
+```
+
+마이그레이션을 실행하려면:
+
+```bash
+php artisan migrate
+```
+
+## 4. PostService 생성
+
+Laravel에서는 비즈니스 로직을 서비스 클래스로 분리하는 것이 좋은 방법입니다. PostService를 생성해 보겠습니다:
+
+```php
+<?php
+
+namespace App\Services;
+
+use App\Models\Post;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+
+class PostService
+{
+    public function getAllPosts(): Collection
+    {
+        return Post::all();
+    }
+    
+    public function getPaginatedPosts(int $perPage = 15): LengthAwarePaginator
+    {
+        return Post::paginate($perPage);
+    }
+    
+    public function getPostById(int $id): ?Post
+    {
+        return Post::find($id);
+    }
+    
+    public function createPost(array $data): Post
+    {
+        return Post::create($data);
+    }
+    
+    public function updatePost(int $id, array $data): bool
+    {
+        $post = Post::find($id);
+        
+        if (!$post) {
+            return false;
+        }
+        
+        return $post->update($data);
+    }
+    
+    public function deletePost(int $id): bool
+    {
+        $post = Post::find($id);
+        
+        if (!$post) {
+            return false;
+        }
+        
+        return $post->delete();
+    }
+    
+    public function getPublishedPosts(): Collection
+    {
+        return Post::where('is_published', true)->get();
+    }
+    
+    public function publishPost(int $id): bool
+    {
+        return $this->updatePost($id, ['is_published' => true]);
+    }
+}
+```
+
+## 5. 기본 CRUD 작업
+
+이제 Eloquent를 사용한 기본적인 CRUD 작업을 살펴보겠습니다.
+
+### 생성(Create)
+
+```php
+// 첫 번째 방법: create 메소드 사용
+$post = Post::create([
+    'title' => '첫 번째 게시물',
+    'content' => '안녕하세요! 이것은 첫 번째 게시물입니다.',
+    'user_id' => 1,
+    'is_published' => true
+]);
+
+// 두 번째 방법: 인스턴스 생성 후 저장
+$post = new Post();
+$post->title = '두 번째 게시물';
+$post->content = '안녕하세요! 이것은 두 번째 게시물입니다.';
+$post->user_id = 1;
+$post->is_published = false;
+$post->save();
+
+// 서비스를 통한 생성
+$postService = new PostService();
+$post = $postService->createPost([
+    'title' => '서비스를 통한 게시물',
+    'content' => '이 게시물은 PostService를 통해 생성되었습니다.',
+    'user_id' => 1
+]);
+```
+
+### 조회(Read)
+
+```php
+// 모든 레코드 가져오기
+$posts = Post::all();
+
+// 특정 ID로 레코드 가져오기
+$post = Post::find(1);
+
+// 조건에 맞는 첫 번째 레코드 가져오기
+$post = Post::where('is_published', true)->first();
+
+// 조건에 맞는 모든 레코드 가져오기
+$publishedPosts = Post::where('is_published', true)->get();
+
+// 페이지네이션
+$paginatedPosts = Post::paginate(15);
+
+// 서비스를 통한 조회
+$postService = new PostService();
+$posts = $postService->getAllPosts();
+$publishedPosts = $postService->getPublishedPosts();
+$post = $postService->getPostById(1);
+```
+
+### 수정(Update)
+
+```php
+// 첫 번째 방법: 모델 업데이트
+$post = Post::find(1);
+$post->title = '수정된 제목';
+$post->content = '이 내용은 수정되었습니다.';
+$post->save();
+
+// 두 번째 방법: 대량 업데이트
+Post::where('id', 1)->update([
+    'title' => '대량 업데이트된 제목',
+    'content' => '이 내용은 대량 업데이트되었습니다.'
+]);
+
+// 서비스를 통한 업데이트
+$postService = new PostService();
+$postService->updatePost(1, [
+    'title' => '서비스를 통해 수정된 제목',
+    'content' => '이 내용은 서비스를 통해 수정되었습니다.'
+]);
+
+// 게시물 발행하기
+$postService->publishPost(1);
+```
+
+### 삭제(Delete)
+
+```php
+// 첫 번째 방법: 모델에서 삭제
+$post = Post::find(1);
+$post->delete();
+
+// 두 번째 방법: ID로 삭제
+Post::destroy(1);
+// 또는 여러 ID 삭제
+Post::destroy([1, 2, 3]);
+
+// 서비스를 통한 삭제
+$postService = new PostService();
+$postService->deletePost(1);
+```
+
+## 6. 관계(Relationships) 설정
+
+Eloquent의 강력한 기능 중 하나는 모델 간의 관계를 쉽게 설정할 수 있다는 것입니다.
+
+### 관계 정의하기
+
+Post와 User 간의 관계를 설정해 보겠습니다:
+
+```php
+// Post 모델에 User와의 관계 설정
+class Post extends Model
+{
+    // ...
+    
+    // 게시물은 한 명의 사용자에게 속합니다 (belongsTo)
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
+    // 게시물은 여러 개의 댓글을 가질 수 있습니다 (hasMany)
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+    
+    // 게시물은 여러 개의 태그를 가질 수 있습니다 (belongsToMany)
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+}
+
+// User 모델에 Post와의 관계 설정
+class User extends Authenticatable
+{
+    // ...
+    
+    // 사용자는 여러 개의 게시물을 가질 수 있습니다 (hasMany)
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+}
+```
+
+### 관계 사용하기
+
+```php
+// 게시물의 작성자 정보 가져오기
+$post = Post::find(1);
+$author = $post->user;
+echo $author->name;
+
+// 사용자의 모든 게시물 가져오기
+$user = User::find(1);
+$posts = $user->posts;
+foreach ($posts as $post) {
+    echo $post->title;
+}
+
+// 게시물과 작성자 정보를 함께 로드 (eager loading)
+$posts = Post::with('user')->get();
+foreach ($posts as $post) {
+    echo $post->title . ' by ' . $post->user->name;
+}
+
+// 게시물과 댓글을 함께 로드
+$posts = Post::with(['user', 'comments'])->get();
+
+// 특정 조건의 관계만 로드
+$posts = Post::with(['comments' => function ($query) {
+    $query->where('is_approved', true);
+}])->get();
+```
+
+## 7. 쿼리 스코프 사용하기
+
+쿼리 스코프를 사용하면 자주 사용하는 쿼리 조건을 캡슐화할 수 있습니다:
+
+```php
+class Post extends Model
+{
+    // ...
+    
+    // 전역 스코프: 항상 적용되는 조건
+    protected static function booted()
+    {
+        static::addGlobalScope('latest', function ($query) {
+            $query->latest(); // created_at 기준 내림차순 정렬
+        });
+    }
+    
+    // 로컬 스코프: 필요할 때 체이닝하여 사용
+    public function scopePublished($query)
+    {
+        return $query->where('is_published', true);
+    }
+    
+    public function scopePopular($query)
+    {
+        return $query->where('view_count', '>', 100);
+    }
+    
+    public function scopeFromUser($query, $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+}
+```
+
+스코프 사용하기:
+
+```php
+// published 스코프 사용
+$publishedPosts = Post::published()->get();
+
+// 여러 스코프 체이닝
+$popularPublishedPosts = Post::published()->popular()->get();
+
+// 매개변수가 있는 스코프 사용
+$userPosts = Post::fromUser(1)->get();
+
+// 서비스에서 스코프 활용
+class PostService
+{
+    // ...
+    
+    public function getPopularPublishedPosts(): Collection
+    {
+        return Post::published()->popular()->get();
+    }
+    
+    public function getUserPublishedPosts(int $userId): Collection
+    {
+        return Post::published()->fromUser($userId)->get();
+    }
+}
+```
+
+## 8. 고급 쿼리 빌더 사용법
+
+Eloquent는 강력한 쿼리 빌더를 기반으로 합니다:
+
+```php
+// 여러 조건을 사용한 복잡한 쿼리
+$posts = Post::where('is_published', true)
+    ->where(function ($query) {
+        $query->where('view_count', '>', 100)
+              ->orWhere('comment_count', '>', 5);
+    })
+    ->whereHas('comments', function ($query) {
+        $query->where('is_approved', true);
+    })
+    ->orderBy('created_at', 'desc')
+    ->take(5)
+    ->get();
+
+// 서브 쿼리 사용
+$posts = Post::whereIn('id', function ($query) {
+    $query->select('post_id')
+          ->from('post_views')
+          ->where('viewed_at', '>=', now()->subDays(7));
+})
+->get();
+
+// 원시 표현식 사용
+$posts = Post::select(DB::raw('COUNT(*) as post_count, user_id'))
+    ->where('is_published', true)
+    ->groupBy('user_id')
+    ->having('post_count', '>', 3)
+    ->get();
+```
+
+## 9. 모델 이벤트 및 옵저버
+
+Eloquent 모델은 다양한 이벤트를 트리거합니다:
+
+```php
+class Post extends Model
+{
+    // ...
+    
+    // 모델 이벤트 리스너 등록
+    protected static function booted()
+    {
+        // 생성 전 이벤트
+        static::creating(function ($post) {
+            // 슬러그 자동 생성
+            $post->slug = Str::slug($post->title);
+        });
+        
+        // 업데이트 후 이벤트
+        static::updated(function ($post) {
+            Cache::forget('post_' . $post->id);
+        });
+        
+        // 저장 후 이벤트 (생성 또는 업데이트)
+        static::saved(function ($post) {
+            // 관련된 캐시 갱신
+        });
+        
+        // 삭제 후 이벤트
+        static::deleted(function ($post) {
+            // 관련 리소스 정리
+        });
+    }
+}
+```
+
+또는 별도의 옵저버 클래스를 생성할 수 있습니다:
+
+```bash
+php artisan make:observer PostObserver --model=Post
+```
+
+```php
+<?php
+
+namespace App\Observers;
+
+use App\Models\Post;
+
+class PostObserver
+{
+    public function creating(Post $post)
+    {
+        $post->slug = Str::slug($post->title);
+    }
+    
+    public function updated(Post $post)
+    {
+        Cache::forget('post_' . $post->id);
+    }
+    
+    public function deleted(Post $post)
+    {
+        // 연관된 리소스 정리
+    }
+}
+```
+
+옵저버 등록:
+
+```php
+// AppServiceProvider.php
+public function boot()
+{
+    Post::observe(PostObserver::class);
+}
+```
+
+## 10. Eloquent Collection 활용
+
+Eloquent에서 반환되는 결과는 Collection 객체입니다. 이를 활용하면 데이터를 쉽게 조작할 수 있습니다:
+
+```php
+// 컬렉션 필터링
+$publishedPosts = $posts->filter(function ($post) {
+    return $post->is_published;
+});
+
+// 컬렉션 매핑
+$titles = $posts->map(function ($post) {
+    return $post->title;
+});
+
+// 컬렉션 정렬
+$sortedPosts = $posts->sortByDesc('created_at');
+
+// 특정 컬럼 추출
+$ids = $posts->pluck('id');
+
+// 그룹화
+$postsByUser = $posts->groupBy('user_id');
+
+// 조건 검사
+$hasPopular = $posts->contains(function ($post) {
+    return $post->view_count > 1000;
+});
+```
+
+## 결론
+
+지금까지 Eloquent ORM의 기본 개념과 활용법에 대해 알아보았습니다. Post 모델과 PostService를 중심으로 다양한 예제를 살펴보았는데요, 이것은 Eloquent가 제공하는 기능의 일부일 뿐입니다. Eloquent는 더 많은 고급 기능을 제공하므로, 공식 문서를 참조하시면 더 깊이 있는 내용을 확인하실 수 있습니다.
+
+Eloquent를 활용하면 복잡한 데이터베이스 작업을 직관적이고 효율적으로 수행할 수 있습니다. 특히 서비스 레이어와 함께 사용하면 코드의 가독성과 유지보수성을 크게 향상시킬 수 있습니다.
+
+실제 프로젝트에서는 이 글에서 다룬 내용을 기반으로 본인의 요구사항에 맞게 응용하시면 됩니다. 또한, 성능 최적화나 대규모 데이터 처리 등의 고급 주제는 프로젝트의 필요에 따라 추가적인 학습이 필요할 수 있습니다.
+
+이 글이 여러분의 Laravel 개발에 도움이 되셨기를 바랍니다. 즐거운 코딩 되세요!
