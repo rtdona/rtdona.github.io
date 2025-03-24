@@ -2,6 +2,7 @@
 title: Laravel 04 - Eloquent ORM
 description: Eloquent ORM 알아보기
 author: holymason
+published: false
 categories: [php, laravel]
 tags: [php, laravel, 라라벨, eloquent-orm, mvc]
 ---
@@ -10,20 +11,20 @@ tags: [php, laravel, 라라벨, eloquent-orm, mvc]
 Post 모델과 PostService를 활용한 실제 예제를 통해 Eloquent ORM의 기본 개념과 활용법을 알아보겠습니다.
 
 ## 목차
-0. [Eloquent ORM이란?](#eloquent-orm이란)
-1. [Active Record 패턴](#1-active-record-패턴)
-2. [직관적인 데이터베이스 상호작용](#2-직관적인-데이터베이스-상호작용)
-3. [관계(Relationships) 관리 용이](#3-관계relationships-관리-용이)
-4. [모델 이벤트 및 옵저버 지원](#4-모델-이벤트-및-옵저버-지원)
-5. [모델과 DB 마이그레이션](#5-모델과-db-마이그레이션)
-6. [PostService를 활용한 ORM 예제](#6-postservice를-활용한-orm-예제)
-7. [쿼리 스코프 사용하기](#7-쿼리-스코프-사용하기)
-8. [쿼리 빌더](#8-쿼리-빌더)
-9. [Eloquent Collection 활용](#9-eloquent-collection-활용)
-10. [결론](#결론)
+1. [Eloquent ORM이란?](#1-eloquent-orm이란)
+2. [Active Record 패턴](#2-active-record-패턴)
+3. [직관적인 데이터베이스 상호작용](#3-직관적인-데이터베이스-상호작용)
+4. [관계(Relationships) 관리 용이](#4-관계relationships-관리-용이)
+5. [모델 이벤트 및 옵저버 지원](#5-모델-이벤트-및-옵저버-지원)
+6. [모델과 DB 마이그레이션](#6-모델과-db-마이그레이션)
+7. [PostService를 활용한 ORM 예제](#7-postservice를-활용한-orm-예제)
+8. [쿼리 스코프 사용하기](#8-쿼리-스코프-사용하기)
+9. [쿼리 빌더](#9-쿼리-빌더)
+10. [Eloquent Collection 활용](#10-eloquent-collection-활용)
+11. [결론](#결론)
 
 
-## Eloquent ORM이란?
+## 1. Eloquent ORM이란?
 
 Eloquent는 Laravel에서 제공하는 ORM(Object-Relational Mapping) 시스템입니다.  
 데이터베이스 테이블을 PHP 객체로 매핑하여 **SQL 쿼리를 직접 작성하지 않고도** 데이터베이스 작업을 수행할 수 있게 해줍니다.   
@@ -35,7 +36,7 @@ Eloquent ORM의 주요 특징과 기능을 중점으로 알아보겠습니다.
 > 출처 : https://laravel.com/docs/11.x/structure#the-models-directory
 
 
-## 1. Active Record 패턴
+## 2. Active Record 패턴
 * 객체와 테이블의 일대일 매핑: 각 Eloquent 모델 클래스는 DB의 한 테이블에 대응됩니다
 * 객체에 내장된 CRUD 기능: 모델 인스턴스가 직접 자신의 데이터를 DB에 저장, 수정, 삭제할 수 있습니다.
 * 캡슐화된 데이터베이스 액세스: SQL 쿼리를 직접 작성하지 않고 객체지향적 방식으로 DB에 접근합니다.
@@ -53,7 +54,7 @@ $post->save(); // UPDATE : DB에 업데이트
 $post->delete(); // DELETE : DB에서 삭제
 ```
 
-## 2. 직관적인 데이터베이스 상호작용
+## 3. 직관적인 데이터베이스 상호작용
 * Eloquent는 데이터베이스 작업을 PHP 코드로 자연스럽게 표현합니다
 * 메서드 체이닝을 통해 복잡한 쿼리를 가독성 있게 작성할 수 있습니다.
   * 예시 : `Post::where('is_published', true)->where('view_count', '>', 100)->get();`
@@ -70,7 +71,7 @@ $userPostCount = Post::where('user_id', $userId)->count();
 $averageViewCount = Post::where('is_published', true)->avg('view_count');
 ```
 
-## 3. 관계(Relationships) 관리 용이
+## 4. 관계(Relationships) 관리 용이
 * 명시적 관계 정의: 모델 클래스 내에 메서드로 관계를 정의해 코드의 가독성과 유지보수성을 높입니다.
 * 다양한 관계 유형 지원
   * 1:1 - hasOne / belongsTo 
@@ -115,7 +116,7 @@ $posts = Post::whereHas('comments', function($query) {
 
 ```
 
-## 4. 모델 이벤트 및 옵저버 지원
+## 5. 모델 이벤트 및 옵저버 지원
 * Eloquent는 모델의 생명주기 동안 다양한 이벤트를 발생시켜 비즈니스 로직을 확장할 수 있게 합니다
 * 옵저버 패턴: 별도의 클래스로 이벤트 리스너를 분리해 코드를 더 깔끔하게 관리할 수 있습니다.
 * 생명주기 이벤트: 모델이 생성, 업데이트, 삭제 등의 작업 전후에 특정 코드를 실행할 수 있습니다.
@@ -162,7 +163,7 @@ public function boot() {
 }
 ```
 
-## 5. 모델과 DB 마이그레이션
+## 6. 모델과 DB 마이그레이션
 * Eloquent ORM는 Laravel의 마이그레이션 시스템과 완벽하게 통합되어 있습니다.
   * https://laravel.com/docs/11.x/migrations
 * 모델과 마이그레이션 동시 생성: `php artisan make:model Post -m` 명령어로 모델과 마이그레이션 파일을 동시에 생성할 수 있습니다.
@@ -199,7 +200,7 @@ return new class extends Migration
 };
 ```
 
-## 6. PostService를 활용한 ORM 예제
+## 7. PostService를 활용한 ORM 예제
 * 앞선 포스트에서 다루었던 내용처럼, **유지보수성과 확장성**을 위해 Laravel에서는 비즈니스 로직을 서비스 클래스로 분리하는 것이 좋습니다.    
 * 비즈니스 로직들을 Post 모델 내에서 처리하지 않고, PostService 클래스를 생성하는 예제입니다.
 
@@ -263,7 +264,7 @@ class PostService
 }
 ```
 
-### 6.1. 생성(Create)
+### 7.1. 생성(Create)
 
 ```php
 // 모델의 create 메소드 사용
@@ -284,7 +285,7 @@ $post = $postService->createPost([
 $postService->publishPost($post->id); // 서비스로 생성된 포스트를 publish 
 ```
 
-### 6.2. 조회(Read)
+### 7.2. 조회(Read)
 
 ```php
 // 모든 레코드 가져오기
@@ -309,7 +310,7 @@ $publishedPosts = $postService->getPublishedPosts();
 $post = $postService->getPostById($postId);
 ```
 
-### 6.3. 수정(Update)
+### 7.3. 수정(Update)
 
 ```php
 // 모델의 update 메소드 사용
@@ -326,7 +327,7 @@ $postService->updatePost($postId, [
 ]);
 ```
 
-### 6.4. 삭제(Delete)
+### 7.4. 삭제(Delete)
 
 ```php
 // 첫 번째 방법: 모델에서 삭제
@@ -339,7 +340,7 @@ $postService->deletePost($postId);
 ```
 
 
-## 7. 쿼리 스코프 사용하기
+## 8. 쿼리 스코프 사용하기
 * 쿼리 스코프를 사용하면 자주 사용하는 쿼리 조건을 캡슐화하여, 재사용성과 유지보수성을 높일 수 있습니다.
 * 모델에 `scope` 접두사를 붙인 메소드를 정의하면, `where` 처럼 메소드 이름에서 `scope` 를 생략하고 직접 체이닝할 수 있습니다.
 
@@ -405,7 +406,7 @@ class PostService
 }
 ```
 
-## 8. 쿼리 빌더 
+## 9. 쿼리 빌더 
 * **쿼리 빌더 Query Builder**는 SQL을 객체지향적으로 작성할 수 있도록 도와주는 강력한 도구입니다.
 * 기본적인 `where`, `orderBy`, `groupBy`, `get` 등의 메소드 외에도, 더 복잡한 쿼리를 효율적으로 작성할 수도 있습니다.
 
@@ -439,7 +440,7 @@ $posts = Post::select(DB::raw('COUNT(*) as post_count, user_id'))
     ->get();
 ```
 
-## 9. Eloquent Collection 활용
+## 10. Eloquent Collection 활용
 * Eloquent에서 반환되는 결과는 Collection 객체입니다. 이를 활용하여 필요에 따라 데이터를 처리할 수 있습니다.
 
 ```php
