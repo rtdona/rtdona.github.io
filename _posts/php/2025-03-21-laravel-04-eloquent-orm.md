@@ -2,7 +2,6 @@
 title: Laravel 04 - Eloquent ORM
 description: Eloquent ORM 알아보기
 author: holymason
-published: false
 categories: [php, laravel]
 tags: [php, laravel, 라라벨, eloquent-orm, mvc]
 ---
@@ -11,7 +10,17 @@ tags: [php, laravel, 라라벨, eloquent-orm, mvc]
 Post 모델과 PostService를 활용한 실제 예제를 통해 Eloquent ORM의 기본 개념과 활용법을 알아보겠습니다.
 
 ## 목차
-
+0. [Eloquent ORM이란?](#eloquent-orm이란)
+1. [Active Record 패턴](#1-active-record-패턴)
+2. [직관적인 데이터베이스 상호작용](#2-직관적인-데이터베이스-상호작용)
+3. [관계(Relationships) 관리 용이](#3-관계relationships-관리-용이)
+4. [모델 이벤트 및 옵저버 지원](#4-모델-이벤트-및-옵저버-지원)
+5. [모델과 DB 마이그레이션](#5-모델과-db-마이그레이션)
+6. [PostService를 활용한 ORM 예제](#6-postservice를-활용한-orm-예제)
+7. [쿼리 스코프 사용하기](#7-쿼리-스코프-사용하기)
+8. [쿼리 빌더](#8-쿼리-빌더)
+9. [Eloquent Collection 활용](#9-eloquent-collection-활용)
+10. [결론](#결론)
 
 
 ## Eloquent ORM이란?
