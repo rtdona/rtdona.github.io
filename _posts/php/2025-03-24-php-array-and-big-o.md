@@ -29,14 +29,59 @@ tags: [php, algorithm, big-o, array-flip]
 
 ## 1.3. 빅오표기법 (Big-O Notation)
 * Big O 표기법은 입력 크기(n)에 따라 알고리즘의 실행 시간이 어떻게 증가하는지를 표현하는 방식입니다.
-* **최악의 경우(Worst Case)** 를 기준으로 알고리즘의 성능을 측정합니다.
+* 알고리즘의 **최악의 경우(Worst Case)** 를 기준으로 성능을 측정합니다.
 
-| Big O      | 의미        | 설명 |
-|------------|------------|------|
-| **O(1)**  | 상수 시간  | 입력 크기와 관계없이 항상 일정한 실행 시간 |
-| **O(log n)** | 로그 시간 | 데이터 크기를 절반씩 줄여가며 탐색 (예: 이진 탐색) |
-| **O(n)**  | 선형 시간  | 입력 크기에 비례하여 실행 시간 증가 |
-| **O(n log n)** | 로그 선형 시간 | 대부분의 효율적인 정렬 알고리즘 (예: 병합 정렬) |
-| **O(n²)** | 제곱 시간 | 두 개의 중첩 반복문을 사용 (예: 버블 정렬) |
-| **O(2ⁿ)** | 지수 시간 | 입력 크기가 증가할수록 실행 시간 급격히 증가 (예: 피보나치 재귀) |
+| Big O      | 의미        | 설명                                    |
+|------------|------------|---------------------------------------|
+| **O(1)**  | 상수 시간  | 입력 크기와 관계없이 항상 일정한 실행 시간을 가집니다        |
+| **O(log n)** | 로그 시간 | 데이터 크기를 절반씩 줄여가며 탐색합니다 (예: 이진 탐색)     |
+| **O(n)**  | 선형 시간  | 입력 크기에 비례하여 실행 시간이 증가합니다              |
+| **O(n log n)** | 로그 선형 시간 | 정렬 알고리즘 (예: 병합 정렬)                    |
+| **O(n²)** | 제곱 시간 | 두 개의 중첩 반복문을 사용 (예: for in for, 버블 정렬) |
+| **O(2ⁿ)** | 지수 시간 | 입력 크기가 증가할수록 실행 시간 급격히 증가 (예: 피보나치) |
 
+여기까지 알고리즘에 대해서 간단히 알아보았고, 더 깊은 내용은 다른 포스트에서 다뤄보겠습니다
+
+## 2. 배열 검색 예제
+
+php 배열 검색 예제를 통해 각각의 알고리즘의 성능을 확인해보겠습니다.
+
+### 2.1. 테스트 준비
+
+```php
+// 우편번호 생성 : 랜덤 문자열
+function randomString($length = 5) {
+    return substr(str_shuffle("0123456789"), 0, $length);
+}
+
+// 30,000개의 우편번호를 가진 배열 생성
+$arraySize = 30000;
+$zipcodes = [];
+for ($i = 0; $i < $arraySize; $i++) {
+    $zipcodes[] = randomString();
+}
+
+// 검색할 값을 랜덤으로 선택
+$needle = $zipcodes[array_rand($zipcodes)];
+```
+
+### 2.2. in_array() 함수
+> `in_array(mixed $needle, array $haystack, bool $strict = false): bool`  
+> Searches for `$needle` in `$haystack` using loose comparison unless strict is set.  
+> 번역 : strict가 설정되어 있지 않으면 느슨한 비교를 사용하여 `$haystack`(배열)에서 `$needle`(찾을 값)을 검색합니다.  
+> 출처 : https://www.php.net/manual/en/function.in-array.php
+
+* in_array() 함수는 내부적으로 선형 탐색(Linear Search, O(n)) 알고리즘을 사용합니다.  
+* 따라서, 배열의 크기가 커질수록 성능이 크게 저하될 수 있습니다.
+
+in_array() 검색 예제
+
+```php
+// in_array() 검색 (O(n))
+$start_time = microtime(true);
+$result = in_array($needle, $zipcodes);
+$end_time = microtime(true);
+$execution_time = $end_time - $start_time;
+
+echo "in_array 실행 시간: {$time_in_array} 초\n";
+```
