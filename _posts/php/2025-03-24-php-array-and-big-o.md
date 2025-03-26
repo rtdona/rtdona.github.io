@@ -72,7 +72,7 @@ for ($i = 0; $i < $arraySize; $i++) {
 > `in_array(mixed $needle, array $haystack, bool $strict = false): bool`  
 > Searches for `$needle` in `$haystack` using loose comparison unless strict is set.  
 > 번역 : strict가 설정되어 있지 않으면 느슨한 비교를 사용하여 `$haystack`(배열)에서 `$needle`(찾을 값)을 검색합니다.  
-> 출처 : https://www.php.net/manual/en/function.in-array.php
+> 출처 : [https://www.php.net/manual/en/function.in-array.php](https://www.php.net/manual/en/function.in-array.php)
 
 * in_array() 함수는 내부적으로 선형 탐색(Linear Search, O(n)) 알고리즘을 사용합니다.  
 * 따라서, 배열의 크기가 커질수록 성능이 크게 저하될 수 있습니다.
@@ -97,7 +97,7 @@ in_array 실행 시간: 0.47993659973145 ms
 > `array_flip(array $array): array`  
 > `array_flip()` returns an array in flip order, i.e. keys from array become values and values from array become keys.
 > 번역 : `array_flip()`은 뒤집힌 순서로 배열을 반환합니다. 즉, 배열의 키가 값이 되고, 배열의 값이 키가 됩니다.  
-> 출처 : https://www.php.net/manual/en/function.array-flip.php
+> 출처 : [https://www.php.net/manual/en/function.array-flip.php](https://www.php.net/manual/en/function.in-array.php)
 
 * array_flip() 함수는 내부적으로 배열을 처음부터 끝까지 선형 탐색(Linear Search, O(n)) 알고리즘을 사용합니다.
 * 따라서, 배열의 크기가 커질수록 성능이 크게 저하될 수 있습니다.
