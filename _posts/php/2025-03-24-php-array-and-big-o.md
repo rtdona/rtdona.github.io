@@ -2,7 +2,6 @@
 title: Php 배열과 시간복잡도 (Big O표기법)
 description: Php 배열 예제로 알고리즘 알아보기
 author: holymason
-published: false
 categories: [php, algorithm]
 tags: [php, algorithm, big-o, array-flip]
 ---
@@ -11,6 +10,13 @@ tags: [php, algorithm, big-o, array-flip]
 특정 권역에 대한 우편번호 데이터를 배열 형태로 제공받아, 이 배열 내에서 로직에 필요한 특정 우편번호를 검색하여 사용할 필요가 있었습니다.  
 처음에는 간단한 코드 `in_array($myPostCode,$postCodeArray)` 를 사용해 배열 검색을 처리하려고 했지만, 더 효율적인 방법을 찾기 위해 고민하게 되었습니다.   
 이에 대한 내용을 포스트로 정리해보았습니다.
+
+## 목차
+
+1. [알고리즘과 복잡도](#1-알고리즘과-복잡도)
+2. [배열 검색](#2-배열-검색)
+3. [결론](#결론)
+
 
 ## 1. 알고리즘과 복잡도
 
@@ -42,7 +48,7 @@ tags: [php, algorithm, big-o, array-flip]
 
 여기까지 알고리즘에 대해서 간단히 알아보았고, 더 깊은 내용은 다른 포스트에서 다뤄보겠습니다
 
-## 2. 배열 검색 예제
+## 2. 배열 검색
 
 php 배열 검색 예제를 통해 각각의 알고리즘의 성능을 확인해보겠습니다.
 
@@ -54,15 +60,12 @@ function randomString($length = 5) {
     return substr(str_shuffle("0123456789"), 0, $length);
 }
 
-// 30,000개의 우편번호를 가진 배열 생성
-$arraySize = 30000;
+// 50,000개의 우편번호를 가진 배열 생성
+$arraySize = 50000;
 $zipcodes = [];
 for ($i = 0; $i < $arraySize; $i++) {
     $zipcodes[] = randomString();
 }
-
-// 검색할 값을 랜덤으로 선택
-$needle = $zipcodes[array_rand($zipcodes)];
 ```
 
 ### 2.2. in_array() 함수
@@ -74,14 +77,91 @@ $needle = $zipcodes[array_rand($zipcodes)];
 * in_array() 함수는 내부적으로 선형 탐색(Linear Search, O(n)) 알고리즘을 사용합니다.  
 * 따라서, 배열의 크기가 커질수록 성능이 크게 저하될 수 있습니다.
 
-in_array() 검색 예제
+```php
+// in_array() 검색 예제 : O(n)
+$start_in_array = microtime(true);
+$needle = $zipcodes[array_rand($zipcodes)]; // 검색할 값 (배열 중 하나 선택)
+$result = in_array($needle, $zipcodes);
+$end_in_array = microtime(true);
+$time_in_array = ($end_in_array - $start_in_array) * 1000; // 실행시간 ms(밀리초)
+echo "in_array 실행 시간: {$time_in_array} ms";
+```
+
+`in_array()` 실행결과
+
+```
+in_array 실행 시간: 0.47993659973145 ms 
+```
+
+### 2.3. array_flip() 함수
+> `array_flip(array $array): array`  
+> `array_flip()` returns an array in flip order, i.e. keys from array become values and values from array become keys.
+> 번역 : `array_flip()`은 뒤집힌 순서로 배열을 반환합니다. 즉, 배열의 키가 값이 되고, 배열의 값이 키가 됩니다.  
+> 출처 : https://www.php.net/manual/en/function.array-flip.php
+
+* array_flip() 함수는 내부적으로 배열을 처음부터 끝까지 선형 탐색(Linear Search, O(n)) 알고리즘을 사용합니다.
+* 따라서, 배열의 크기가 커질수록 성능이 크게 저하될 수 있습니다.
 
 ```php
-// in_array() 검색 (O(n))
-$start_time = microtime(true);
-$result = in_array($needle, $zipcodes);
-$end_time = microtime(true);
-$execution_time = $end_time - $start_time;
-
-echo "in_array 실행 시간: {$time_in_array} 초\n";
+// array_flip() + isset() 사용 
+$start_array_flip = microtime(true);
+$flipped_zipcodes = array_flip($zipcodes);  // O(n)
+$needle = $zipcodes[array_rand($zipcodes)];
+$result = isset($flipped_zipcodes[$needle]); // O(1)
+$end_array_flip = microtime(true);
+$time_array_flip = ($end_array_flip - $start_array_flip) * 1000;
+echo "array_flip 실행 시간: {$time_array_flip} ms";
 ```
+
+`array_flip()` 실행결과
+
+```
+array_flip 실행 시간: 2.7070045471191 ms
+```
+
+두 함수의 실행 시간을 볼 때, `in_array()` 보다 `array_flip()` + `isset()` 의 실행시간이 더 긴 것을 확인할 수 있는데, 이는 `isset()` 함수를 실행할 때 O(1) 의 시간만큼 더 소요되기 때문입니다.
+
+### 2.4. 반복 검색
+
+* 앞서 `in_array()` 와 `array_flip()` + `isset()` 각각의 실행 시간을 확인해보았는데, 배열에서 반복 검색할 때는 어떤지 확인해보겠습니다.
+
+```php
+$count = 1000; // 각각의 배열($zipcodes, $flipped_zipcodes)을 검색할 횟수
+
+// 1. in_array() 
+$start_in_array = microtime(true);
+for($j=0; $j < $count; $j++){
+   $needle = $zipcodes[array_rand($zipcodes)]; // 검색할 값 (배열 중 하나 선택)
+   $result = in_array($needle, $zipcodes);
+}
+$end_in_array = microtime(true);
+$time_in_array = ($end_in_array - $start_in_array) * 1000;
+echo "in_array 실행 시간: {$time_in_array} ms";
+
+// 2. array_flip() + isset() 
+$start_array_flip = microtime(true);
+$flipped_zipcodes = array_flip($zipcodes);  // O(n)
+for($k=0; $k < $count; $k++) {
+   $needle = $zipcodes[array_rand($zipcodes)];
+   $result = isset($flipped_zipcodes[$needle]); // O(1)
+}
+$end_array_flip = microtime(true);
+$time_array_flip = ($end_array_flip - $start_array_flip) * 1000;
+echo "array_flip 실행 시간: {$time_array_flip} ms";
+```
+
+반복 실행 결과
+
+```
+in_array 실행 시간: 1695.3239440918 ms
+array_flip 실행 시간: 3.2780170440674 ms
+```
+
+반복 실행으로 확인해본 결과, `in_array()`는 O(n) 선형 탐색을 반복해서 실행하는 반면,  
+`array_flip()`을 사용하면 O(n) 으로 1회 변환 후 반복해서 실행하는 로직은 O(1) 로 검색할 수 있어 반복 검색 시 훨씬 빠른 결과를 나타냅니다.
+
+## 결론 
+우편번호 데이터 **배열의 크기**와 그리고 **배열 검색 횟수**에 따라 가장 효율적인 성능을 낼 수 있는 함수를 선택하여 사용하면 됩니다.
+* `array_flip()` 방식은 검색 횟수가 많을수록 `isset()`의 O(1) 속도 덕분에 훨씬 더 빠르게 동작합니다.
+* `in_array()`는 배열 크기가 커지고, 검색 횟수가 많아질수록 선형 탐색 O(n) 비용이 누적되며 점점 느려집니다.
+* 따라서, 자주 검색해야 하는 경우에는 `array_flip()` 을 활용하여 `isset()`을 사용하는 것이 훨씬 효율적입니다.
