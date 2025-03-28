@@ -197,6 +197,11 @@ defaults:
     values:
       layout: page
       permalink: /:title/
+  - scope:
+      path: "_bookmarks"
+      type: bookmarks
+    values:
+      layout: "bookmark"
 
 sass:
   style: compressed

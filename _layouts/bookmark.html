@@ -1,0 +1,27 @@
+---
+layout: default
+refactor: true
+panel_includes:
+- toc
+tail_includes:
+- related-posts
+- post-nav
+script_includes:
+- comment
+---
+
+{% include lang.html %}
+
+{% include toc-status.html %}
+
+<article class="bookmark">
+  <h1>{{ page.title }}</h1>
+  <p><strong>🔗 링크:</strong> <a href="{{ page.url }}" target="_blank">{{ page.url }}</a></p>
+  <p><strong>📅 추가한 날짜:</strong> {{ page.date | date: "%Y-%m-%d" }}</p>
+
+  <hr>
+
+  <div class="bookmark-content">
+    {{ content }}
+  </div>
+</article>
