@@ -172,6 +172,9 @@ collections:
   tabs:
     output: true
     sort_by: order
+  bookmarks:
+    output: true
+    permalink: /bookmarks/:title/
 
 defaults:
   - scope:
