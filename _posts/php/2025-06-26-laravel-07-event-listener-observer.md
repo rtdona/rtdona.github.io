@@ -9,7 +9,7 @@ tags: [php, laravel, event, listener, observer, design-pattern]
 이 포스트에서는 Laravel의 **이벤트(Event) & 리스너(Listener)**,  
 그리고 **옵저버(Observer) 패턴**에 대해 알아보겠습니다.
 
-# Laravel Event & Listener, Observer 패턴 완벽 가이드
+# Laravel Event & Listener, Observer 패턴 
 
 ---
 
