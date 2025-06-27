@@ -382,20 +382,6 @@ public function boot()
 
 ---
 
-### 참고 문서
-
-* [Laravel 공식: Events & Listeners](https://laravel.com/docs/events)
-* [Laravel 공식: Eloquent Observers](https://laravel.com/docs/eloquent#observers)
-* [라라벨코리아: 옵저버 활용 팁](https://laravel.kr/docs/8.x/eloquent#observers)
-
----
-
-**실무적으로 언제 Event/Listener와 Observer를 쓰는 게 좋은지,
-상호 활용/조합 전략**이 궁금하다면 추가로 설명해드릴 수 있습니다!
-
-
----
-
 ## 결론
 
 * **Event & Listener**:
