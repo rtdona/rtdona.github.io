@@ -1,5 +1,5 @@
 ---
-title: Laravel 12 - Form Request 입력값 검증
+title: Laravel 11 - Form Request 입력값 검증
 description: FormRequest로 안전한 입력값 검증과 예제
 author: holymason
 categories: [php, laravel, validation]
