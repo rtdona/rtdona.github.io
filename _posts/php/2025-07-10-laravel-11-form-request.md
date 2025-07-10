@@ -25,7 +25,7 @@ Laravel Validator에 [이전 포스트](/posts/laravel-05-validator/)에서는 �
 2. [FormRequest 생성 및 사용법](#2-formrequest-생성-및-사용법)
 3. [User/Post/Comment 예제](#3-userpostcomment-예제)
 4. [Validation Rule](#4-validation-rule)
-5. [팁 & 주의할 점](#4-팁--주의할-점)
+5. [팁 & 주의할 점](#5-팁--주의할-점)
 6. [결론](#결론)
 
 ---
